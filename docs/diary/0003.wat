@@ -92,10 +92,6 @@
     i32.const 1
     call $write_memory
     ;)
-
-
-
-
   )
 
   ;; https://webassembly.github.io/spec/core/text/modules.html#start-function
