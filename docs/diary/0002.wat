@@ -63,7 +63,7 @@
 
     i32.const 1
     i32.const 0
-    i32.const 4
+    i32.const 1
     i32.const 12
     call $fd_write
 
@@ -85,11 +85,10 @@
 
     i32.const 1
     i32.const 0
-    i32.const 4
+    i32.const 1
     i32.const 12
     call $fd_write
 
-    ;; 0x00000015
     call $write_i32
   )
 

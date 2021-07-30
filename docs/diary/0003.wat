@@ -25,7 +25,7 @@
 
     i32.const 1
     i32.const 0
-    i32.const 4
+    i32.const 1
     i32.const 12
     call $fd_write
 
@@ -43,12 +43,12 @@
 
     local.get $fd
     i32.const 0
-    local.get $n
+    i32.const 1
     local.get $o
     call $fd_write
 
-    drop
-    ;; call $write_i32
+    ;; drop
+    call $write_i32
   )
 
   ;; https://webassembly.github.io/spec/core/text/modules.html#text-func
@@ -65,7 +65,7 @@
     i32.const 1024
     i32.const 4
     i32.const 2048
-    i32.const 256
+    i32.const 1
     call $write_memory
 
     i32.const 2048
