@@ -38,7 +38,6 @@
     i32.const 0
     local.set $n
 
-
     ;; $p = $p - 1
     local.get $p
     i32.const 1
@@ -56,10 +55,19 @@
     i32.const 0x0A
     i32.store8
 
-    ;; if $v == 0 then ... else ... end
-    local.get $v
-    i32.eqz
-    if
+    loop $L
+      ;; $u = $v % 10
+      local.get $v
+      i32.const 10
+      i32.rem_u
+      local.set $u
+
+      ;; $v = $v / 10
+      local.get $v
+      i32.const 10
+      i32.div_u
+      local.set $v
+
       ;; $p = $p - 1
       local.get $p
       i32.const 1
@@ -72,51 +80,18 @@
       i32.add
       local.set $n
 
-      ;; *$p = '0'
+      ;; *$p = $u + '0'
       local.get $p
+      local.get $u
       i32.const 0x30
+      i32.add
       i32.store8
-    else
-      loop $L
-        ;; $u = $v % 10
-        local.get $v
-        i32.const 10
-        i32.rem_u
-        local.set $u
 
-        ;; $v = $v / 10
-        local.get $v
-        i32.const 10
-        i32.div_u
-        local.set $v
-
-
-        ;; $p = $p - 1
-        local.get $p
-        i32.const 1
-        i32.sub
-        local.set $p
-
-        ;; $n = $n + 1
-        local.get $n
-        i32.const 1
-        i32.add
-        local.set $n
-
-        ;; *$p = $u + '0'
-        local.get $p
-        local.get $u
-        i32.const 0x30
-        i32.add
-        i32.store8
-
-
-        ;; $v != 0
-        local.get $v
-        i32.const 0
-        i32.ne
-        br_if $L
-      end
+      ;; $v != 0
+      local.get $v
+      i32.const 0
+      i32.ne
+      br_if $L
     end
 
     ;; $q = new(16)
@@ -148,11 +123,58 @@
     drop
   )
 
+  (func $test1 (param $v i32)
+    block $L
+      block $L1
+        block $L2
+          block $L3
+            block $L4
+              block $L5
+                block $L6
+                  block $L7
+                    block $L8
+                      local.get $v
+                      br_table $L1 $L2 $L3 $L4 $L5 $L6 $L7 $L8
+                    end
+                    i32.const 8
+                    call $print_i32
+                    br $L
+                  end
+                  i32.const 7
+                  call $print_i32
+                  br $L
+                end
+                i32.const 6
+                call $print_i32
+                br $L
+              end
+              i32.const 5
+              call $print_i32
+              br $L
+            end
+            i32.const 4
+            call $print_i32
+            br $L
+          end
+          i32.const 3
+          call $print_i32
+          br $L
+        end
+        i32.const 2
+        call $print_i32
+        br $L
+      end
+      i32.const 1
+      call $print_i32
+      br $L
+    end
+  )
+
   (func $main
     ;; call $test1
     ;; call $test2
-    i32.const 0xFFFFFFFF
-    call $print_i32
+    i32.const 100
+    call $test1
   )
   (export "_start" (func $main))
 )
