@@ -3,4 +3,4 @@ clean::
 
 
 %.wasm: %.wat
-	wat2wasm --enable-bulk-memory $<
+	wat2wasm $<
