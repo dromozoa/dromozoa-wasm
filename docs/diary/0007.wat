@@ -299,4 +299,6 @@
     call $test1
   )
   (export "_start" (func $main))
+
+  ;; (start $main)
 )
