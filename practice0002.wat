@@ -11,18 +11,20 @@
 ;; [wasmtime]
 ;; wasmtime run practice0002.wasm
 
+;; https://webassembly.github.io/spec/core/text/modules.html#modules
 (module
+  ;; https://webassembly.github.io/spec/core/text/modules.html#imports
   (import "wasi_snapshot_preview1" "proc_exit"
     (func $proc_exit (param i32)))
 
-  (memory 16)
+  ;; https://webassembly.github.io/spec/core/text/modules.html#memories
+  ;; ページサイズは64KiB
+  (memory $memory (export "memory") 1)
 
-  (func $main
+  ;; https://webassembly.github.io/spec/core/text/modules.html#functions
+  (func $main (export "_start")
     i32.const 42
     call $proc_exit
-    unreachable
+    ;; unreachable
   )
-
-  (export "memory" (memory 0))
-  (export "_start" (func $main))
 )
