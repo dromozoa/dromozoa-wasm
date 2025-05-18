@@ -15,7 +15,7 @@
 
   (func $write (param $fd i32)(param $data i32)(param $size i32)(result i32)
     ;; struct iovs {
-    ;;   const char* ptr;
+    ;;   const char* data;
     ;;   size_t size;
     ;; }
     (local $sp i32)
