@@ -4,6 +4,11 @@
   (func $proc_exit (import "wasi_snapshot_preview1" "proc_exit") (param i32))
 
   ;; https://wasix.org/docs/api-reference/wasi/fd_write
+  ;; 結果の定義は下記のようになっている:
+  ;; (result $error (expected $size (error $errno)))
+  ;; https://github.com/WebAssembly/WASI/blob/main/legacy/tools/witx-docs.md
+  ;; 成功の場合は0が返り、失敗の場合は$errnoが返る。
+  ;; 成功の場合は第4引数のポインタ先に$sizeが格納される。
   (import "wasi_unstable" "fd_write" (func $fd_write (param i32 i32 i32 i32) (result i32)))
 
   ;; https://webassembly.github.io/spec/core/text/modules.html#memories
@@ -15,13 +20,13 @@
 
   (func $write (param $fd i32)(param $data i32)(param $size i32)(result i32)
     ;; struct iovs {
-    ;;   const char* data;
+    ;;   const void* data;
     ;;   size_t size;
     ;; }
     (local $sp i32)
     global.get $SP
     local.tee $sp
-    i32.const 16
+    i32.const 12
     i32.add
     global.set $SP
 
@@ -41,6 +46,9 @@
     i32.add
 
     call $fd_write
+
+    local.get $sp
+    global.set $SP
   )
 
   ;; https://webassembly.github.io/spec/core/text/modules.html#functions
@@ -49,9 +57,6 @@
     i32.const 1024
     i32.const 12
     call $write
-    drop
-
-    i32.const 42
     call $proc_exit
     ;; unreachable
   )
