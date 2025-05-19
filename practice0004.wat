@@ -12,18 +12,19 @@
 
   (func $stack_allocate (param $size i32)(result i32)
     (;
-      int stack_allocate(int $size) {
-        int $sp_cur = $stack_ptr;
-        int $sp_new = $sp_cur + $size;
-        if ($sp_new >= $stack_end) {
-          unreachable;
-        }
-        $stack_ptr = $sp_cur;
-        return $sp_cur;
-      }
+      function stack_allocate(size <i32>) <i32>
+        local sp_cur <i32> = stack_ptr
+        local sp_new <i32> = sp_cur + size
+        if sp_new >= stack_end then
+          unreachable
+        end
+        stack_ptr = sp_new
+        return sp_cur
+      end
     ;)
     (local $sp_cur i32)
     (local $sp_new i32)
+
     global.get $stack_ptr
     local.tee $sp_cur
     local.get $size
@@ -40,6 +41,14 @@
   )
 
   (func $write_string (param $fd i32)(param $data i32)(param $size i32)
+    (;
+      local sp <i32> = stack_allocate(12)
+      memory[sp] = data
+      memory[sp + 4] = size
+      fd_write(fd, sp, 1, sp + 8)
+      stack_ptr = sp
+    ;)
+
     (local $sp i32)
     (local.set $sp (call $stack_allocate (i32.const 12)))
 
@@ -57,6 +66,15 @@
   )
 
   (func $write_char (param $fd i32)(param $char i32)
+    (;
+      local sp <i32> = stack_allocate(16)
+      memory[sp] = char <i8>
+      memory[sp + 4] = sp
+      memory[sp + 8] = 1
+      fd_write(fd, sp + 4, 1, sp + 12)
+      stack_ptr = sp
+    ;)
+
     (local $sp i32)
     (local.set $sp (call $stack_allocate (i32.const 16)))
 
@@ -75,6 +93,23 @@
   )
 
   (func $write_i32_dec (param $fd i32)(param $v i32)
+    (;
+      local sp <i32> = stack_allocate(12)
+      local p <i32> = $sp + 11
+      local i <i32> = 0
+      loop
+        local r <i32> = v % 10
+        v <i32> = v // 10
+        memory[p - i] = (r + 0x30) <i32>
+        if v != 0 then
+          i = i + 1
+          continue
+        end
+      end
+      write_string(fd, p - i, i + 1)
+      stack_ptr = sp
+    ;)
+
     (local $sp i32)
     (local $p i32)
     (local $i i32)
@@ -112,7 +147,7 @@
   (func (export "_start")
     ;; i32.const 12
     ;; (call $stack_allocate (i32.const 12))
-    (call $write_i32_dec (i32.const 1) (i32.const 0))
+    (call $write_i32_dec (i32.const 1) (i32.const 10000))
     (call $write_char (i32.const 1) (i32.const 0x0A))
   )
 
