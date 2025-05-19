@@ -74,10 +74,37 @@
     (global.set $stack_ptr (local.get $sp))
   )
 
-  (func $write_i32 (param $value i32)
+  (func $write_i32_dec (param $fd i32)(param $v i32)
     (local $sp i32)
+    (local $p i32)
+    (local $i i32)
+    (local $r i32)
+
     (local.set $sp (call $stack_allocate (i32.const 12)))
 
+    (local.set $p (i32.add (local.get $sp) (i32.const 11)))
+
+    (local.set $i (i32.const 0))
+    loop $loop
+      (local.set $r (i32.rem_u (local.get $v) (i32.const 10)))
+      (local.set $v (i32.div_u (local.get $v) (i32.const 10)))
+      (i32.store8
+        (i32.sub (local.get $p) (local.get $i))
+        (i32.add (local.get $r) (i32.const 0x30)))
+
+      (local.get $v)
+      (i32.eqz)
+      (i32.eqz)
+      if ;; $vが0でなければ
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        br $loop
+      end
+    end
+
+    (call $write_string
+      (local.get $fd)
+      (i32.sub (local.get $p) (local.get $i))
+      (i32.add (local.get $i) (i32.const 1)))
 
     (global.set $stack_ptr (local.get $sp))
   )
@@ -85,7 +112,7 @@
   (func (export "_start")
     ;; i32.const 12
     ;; (call $stack_allocate (i32.const 12))
-    (call $write_char (i32.const 1) (i32.const 0x41))
+    (call $write_i32_dec (i32.const 1) (i32.const 0))
     (call $write_char (i32.const 1) (i32.const 0x0A))
   )
 
