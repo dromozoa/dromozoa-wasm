@@ -56,16 +56,37 @@
     (global.set $stack_ptr (local.get $sp))
   )
 
+  (func $write_char (param $fd i32)(param $char i32)
+    (local $sp i32)
+    (local.set $sp (call $stack_allocate (i32.const 16)))
+
+    (i32.store8 (local.get $sp) (local.get $char))
+    (i32.store offset=4 (local.get $sp) (local.get $sp))
+    (i32.store offset=8 (local.get $sp) (i32.const 1))
+
+    (call $fd_write
+      (local.get $fd)
+      (i32.add (local.get $sp) (i32.const 4))
+      (i32.const 1)
+      (i32.add (local.get $sp) (i32.const 12)))
+    (drop)
+
+    (global.set $stack_ptr (local.get $sp))
+  )
+
   (func $write_i32 (param $value i32)
+    (local $sp i32)
+    (local.set $sp (call $stack_allocate (i32.const 12)))
+
+
+    (global.set $stack_ptr (local.get $sp))
   )
 
   (func (export "_start")
     ;; i32.const 12
     ;; (call $stack_allocate (i32.const 12))
-    (call $write_string
-      (i32.const 1)
-      (i32.const 1024)
-      (i32.const 5))
+    (call $write_char (i32.const 1) (i32.const 0x41))
+    (call $write_char (i32.const 1) (i32.const 0x0A))
   )
 
   (data $memory (i32.const 1024) "test\n")
