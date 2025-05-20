@@ -7,7 +7,8 @@ TARGET = \
 	practice0001.wasm \
 	practice0002.wasm \
 	practice0003.wasm \
-	practice0004.wasm
+	practice0004.wasm \
+	practice0005.wasm
 
 all:: $(TARGET)
 
