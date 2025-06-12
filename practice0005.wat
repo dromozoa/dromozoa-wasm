@@ -15,7 +15,7 @@
   (global $stack_ptr (mut i32) (i32.const 16384))
   (global $stack_end i32 (i32.const 32768))
 
-  (func $roundup (param $v i32)(param $n i32)(result i32)
+  (func $roundup(param $v i32)(param $n i32)(result i32)
     (local $mask i32)
 
     (local.set $mask
@@ -26,6 +26,30 @@
     (i32.and
       (i32.add (local.get $v) (local.get $mask))
       (i32.xor (local.get $mask) (i32.const -1)))
+    (return)
+  )
+
+  (func $roundup2(param $n i32)(param $a i32)(result i32)
+    (local $r i32)
+
+    (local.get $n)
+    (local.get $a)
+    (i32.rem_u)
+    (local.set $r)
+
+    (local.get $r)
+    (i32.const 0)
+    (i32.eq)
+    (if (result i32)
+      (then
+        (i32.const 100)
+        return
+      )
+      (else
+        (i32.const 200)
+        return
+      )
+    )
   )
 
   (func $stack_allocate (param $size i32)(result i32)
@@ -46,7 +70,8 @@
     end
     (global.set $stack_ptr (local.get $sp_new))
 
-    local.get $sp_cur
+    (local.get $sp_cur)
+    (return)
   )
 
   (func $strlen (param $s i32)(result i32)
