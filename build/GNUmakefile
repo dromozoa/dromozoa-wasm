@@ -17,7 +17,7 @@ clean::
 	$(RM) $(TARGET) *.out *.wat
 
 %.wasm: %.cpp
-	em++ -O3 -sPURE_WASI $< -o $(basename $@).out
+	em++ -sSTANDALONE_WASM -sPURE_WASI $< -o $(basename $@).out
 	wasm2wat $@ >$(basename $@).wat
 
 %.wasm: %.wat
